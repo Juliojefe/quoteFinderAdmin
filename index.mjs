@@ -19,16 +19,47 @@ const pool = mysql.createPool({
   waitForConnections: true
 });
 
+app.get('/addQuote', async (req, res) => {
+  //  search by author
+  let authorsSql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
+  const [authorRows] = await pool.query(authorsSql);
+  //  search by category
+  let categoriesSql = "SELECT DISTINCT category FROM quotes;";
+  const [categoriesRows] = await pool.query(categoriesSql);
+  res.render("newQuote.ejs", { authorRows, categoriesRows });
+});
+
 app.get('/', async (req, res) => {
   res.render("addAuthor.ejs");
+});
+
+app.post('/addAuthorQuoteByCategory', async (req, res) => {
+  let authorId = req.body.authorId;
+  let cat = req.body.category;
+  let quote = req.body.quote;
+  let sql = `INSERT INTO quotes (quote, authorId, category) VALUES (?, ?, ?)`;
+  let sqlParams = [quote, authorId, cat];
+  const [rows] = await pool.query(sql, sqlParams);
+  //  search by author
+  let authorsSql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
+  const [authorRows] = await pool.query(authorsSql);
+  //  search by category
+  let categoriesSql = "SELECT DISTINCT category FROM quotes;";
+  const [categoriesRows] = await pool.query(categoriesSql);
+  res.render("newQuote.ejs", { authorRows, categoriesRows });
 });
 
 //  Displays form to add a new author
 app.post('/addAuthor', async (req, res) => {
   let firstName = req.body.fn;
   let lastName = req.body.ln;
-  let sql = `INSERT INTO authors (firstName, lastName) VALUES (?, ?)`;
-  let sqlParams = [firstName, lastName];
+  let sex = req.body.sex;
+  let birthday = req.body.birthday;
+  let deathday = req.body.deathday;
+  let bio = req.body.bio;
+  let imageUrl = req.body.imageUrl;
+  let sql = `INSERT INTO authors (firstName, lastName, dob, dod, sex, portrait, biography) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  let sqlParams = [firstName, lastName, birthday, deathday, sex, imageUrl, bio];
   const [rows] = await pool.query(sql, sqlParams);
   res.render("addAuthor.ejs");
 });
