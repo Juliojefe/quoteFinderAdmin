@@ -12,6 +12,7 @@
   <link href="/css/styles.css" rel="stylesheet">
 </head>
 <body>
+  <%- include("partials/header.ejs") %>
   <h1>Adding New Quote</h1>
   <form action="/addAuthorQuoteByCategory" method="POST">
     <label>Select author</label>
@@ -34,6 +35,7 @@
     Quote: <textarea name="quote"></textarea>
     <button>Insert</button>
   </form>
-
+  <script src="js/newQuote.js"></script>
+  <%- include("partials/footer.ejs") %>
 </body>
 </html>

@@ -14,6 +14,7 @@
 </head>
 
 <body>
+  <%- include("partials/header.ejs") %>
   <h1>Adding New Author</h1>
   <form action="/addAuthor" method="POST">
     First Name: <input type="text" name="fn">
@@ -46,7 +47,7 @@
   <form action="/addQuote" method="GET">
     <button type="submit">Add New Quote</button>
   </form>
-
+  <%- include("partials/footer.ejs") %>
 </body>
 
 </html>

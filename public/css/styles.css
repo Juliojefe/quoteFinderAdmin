@@ -2,3 +2,14 @@
   display: flex;
   gap: 20px;
 }
+
+#footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #316CF4;
+  color: white;
+  margin-top: 20px;
+  padding: 20px;
+  font-size: x-large;
+}
