@@ -15,41 +15,43 @@
 
 <body>
   <%- include("partials/header.ejs") %>
-  <h1>Updating Author</h1>
-
-  <%= authorInfo[0].dob %> <br>
+    <h1>Updating Author</h1>
 
 
-  <form action="/updateAuthor" method="POST">
-    <input type="hidden" name="authorId" value="<%= authorInfo[0].authorId %>">
-    First Name: <input type="text" name="fn" value="<%= authorInfo[0].firstName %>">
-    <br>
-    Last Name: <input type="text" name="ln" value="<%= authorInfo[0].lastName %>">
-    <br>
-    <!-- <div id="sexDiv">
-      <p>Sex: </p>
-      <label>
-        <input type="radio" name="sex" value="M">
-        Male
-      </label>
-      <label>
-        <input type="radio" name="sex" value="F">
-        Female
-      </label>
-    </div>
-    <br>
-    Date Of birth: <input type="date" name="birthday">
-    <br>
-    Date Of death: <input type="date" name="deathday">
-    <br>
-    Biography: <textarea name="bio"></textarea>
+    <form action="/updateAuthor" method="POST">
+      <input type="hidden" name="authorId" value="<%= authorInfo[0].authorId %>">
+      First Name: <input type="text" name="fn" value="<%= authorInfo[0].firstName %>">
+      <br>
+      Last Name: <input type="text" name="ln" value="<%= authorInfo[0].lastName %>">
+      <br>
+      Date Of birth: <input type="date" name="birthday" value="<%= authorInfo[0].ISOdob %>">
+      <br>
+      Biography: <textarea name="bio"><%= authorInfo[0].biography %></textarea>
+      <br>
+      <!-- <div id="sexDiv">
+        <p>Sex: </p>
+        <label>
+          <input type="radio" name="sex" <%= (authorInfo[0].sex == 'M') ? 'checked' : '' %>> Male </label>
+        <label>
+          <input type="radio" name="sex" value="F" <%= (authorInfo[0].sex == 'F') ? 'checked' : '' %>> Female </label>
+      </div>
+      <br> -->
+      Sex:
+      <select>
+        <option <%=(authorInfo[0].sex=='M' ) ? "selected" : "" %>
+          value="M">Male</option>
+        <option <%=(authorInfo[0].sex=='F' ) ? "selected" : "" %>
+          value="F">Female</option>
+      </select>
+      <br>
+      <!-- Date Of death: <input type="date" name="deathday">
     <br>
     Image Url: <input type="text" name="imageUrl">
     <br> -->
-    <button>Update Author</button>
-  </form>
-  <br>
-  <%- include("partials/footer.ejs") %>
+      <button>Update Author</button>
+    </form>
+    <br>
+    <%- include("partials/footer.ejs") %>
 </body>
 
 </html>

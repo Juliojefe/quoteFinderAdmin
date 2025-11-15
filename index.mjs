@@ -47,7 +47,11 @@ app.post('/updateAuthor', async (req, res) => {
 // display form to update author info
 app.get('/updateAuthor', async (req, res) => {
   let authorId = req.query.id;
-  let sql = `SELECT * FROM authors WHERE authorId = ?`;
+  let sql = `SELECT *,
+            DATE_FORMAT(dob, '%Y-%m-%d') ISOdob,
+            DATE_FORMAT(dod, '%Y-%m-%d') ISOdod
+            FROM authors 
+            WHERE authorId = ?`;
   const [authorInfo] = await pool.query(sql, [authorId]);
   res.render("updateAuthor.ejs", {authorInfo});
 });
