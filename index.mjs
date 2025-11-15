@@ -42,7 +42,7 @@ app.get('/updateQuote', async (req, res) => {
   let authorsSql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
   const [authorRows] = await pool.query(authorsSql);
   //  search by category
-  let categoriesSql = "SELECT DISTINCT category FROM quotes;";
+  let categoriesSql = "SELECT DISTINCT category, quoteId FROM quotes;";
   const [categoriesRows] = await pool.query(categoriesSql);
   res.render("updateQuote.ejs", {quoteInfo, authorRows, categoriesRows});
 });

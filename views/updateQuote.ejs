@@ -20,7 +20,7 @@
       <label>Select author</label>
       <select name="authorId">
         <% for (let authorRow of authorRows) { %>
-          <option value="<%= authorRow.authorId %>" <% if (authorRow.authorId==quoteInfo[0].authorId ) { %>
+          <option value="<%= authorRow.authorId %>" <% if (authorRow.authorId == quoteInfo[0].authorId ) { %>
             selected
             <% } %>>
               <%= authorRow.firstName + " " + authorRow.lastName %>
@@ -30,7 +30,9 @@
       <label>Select category</label>
       <select name="category">
         <% for (let catRow of categoriesRows) { %>
-          <option value="<%= catRow.category %>">
+          <option value="<%= catRow.category %>"  <% if (catRow.quoteId == quoteInfo[0].quoteId ) { %>
+            selected
+            <% } %>>
             <%= catRow.category %>
           </option>
           <% } %>
