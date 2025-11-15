@@ -33,6 +33,19 @@ app.get('/', async (req, res) => {
   res.render("home.ejs");
 });
 
+//  displays form to update quote
+app.get('/updateQuote', async (req, res) => {
+  let quoteId = req.query.quoteId;
+  let sql = `SELECT * FROM quotes WHERE quoteId = ?`;
+  const [quoteInfo] = await pool.query(sql, [quoteId]);
+  //  search by author
+  let authorsSql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
+  const [authorRows] = await pool.query(authorsSql);
+  //  search by category
+  let categoriesSql = "SELECT DISTINCT category FROM quotes;";
+  const [categoriesRows] = await pool.query(categoriesSql);
+  res.render("updateQuote.ejs", {quoteInfo, authorRows, categoriesRows});
+});
 
 app.post('/updateAuthor', async (req, res) => {
   let fName = req.body.fn;
@@ -63,7 +76,10 @@ app.get('/allAuthors', async (req, res) => {
 });
 
 app.get('/allQuotes', async (req, res) => {
-  res.render("allQuotes.ejs");
+  let sql = `SELECT quoteId, quote
+              FROM quotes`;
+  const [quotes] = await pool.query(sql);
+  res.render("allQuotes.ejs", {quotes});
 });
 
 app.post('/addAuthorQuoteByCategory', async (req, res) => {
