@@ -30,7 +30,7 @@ app.get('/addQuote', async (req, res) => {
 });
 
 app.get('/', async (req, res) => {
-  res.render("addAuthor.ejs");
+  res.render("home.ejs");
 });
 
 app.post('/addAuthorQuoteByCategory', async (req, res) => {
@@ -61,6 +61,10 @@ app.post('/addAuthor', async (req, res) => {
   let sql = `INSERT INTO authors (firstName, lastName, dob, dod, sex, portrait, biography) VALUES (?, ?, ?, ?, ?, ?, ?)`;
   let sqlParams = [firstName, lastName, birthday, deathday, sex, imageUrl, bio];
   const [rows] = await pool.query(sql, sqlParams);
+  res.render("addAuthor.ejs");
+});
+
+app.get('/addAuthor', async (req, res) => {
   res.render("addAuthor.ejs");
 });
 
