@@ -33,6 +33,35 @@ app.get('/', async (req, res) => {
   res.render("home.ejs");
 });
 
+
+app.post('/updateAuthor', async (req, res) => {
+  let fName = req.body.fn;
+  let lName = req.body.ln;
+  let authorId = req.body.authorId;
+  let sql = `UPDATE authors SET firstName = ?, lastName = ? WHERE authorId = ?`;
+  let sqlParams = [fName, lName, authorId];
+  const [row] = await pool.query(sql, sqlParams);
+  res.redirect("/allAuthors");
+});
+
+// display form to update author info
+app.get('/updateAuthor', async (req, res) => {
+  let authorId = req.query.id;
+  let sql = `SELECT * FROM authors WHERE authorId = ?`;
+  const [authorInfo] = await pool.query(sql, [authorId]);
+  res.render("updateAuthor.ejs", {authorInfo});
+});
+
+app.get('/allAuthors', async (req, res) => {
+  let sql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
+  const [authors] = await pool.query(sql);
+  res.render("allAuthors.ejs", {authors});
+});
+
+app.get('/allQuotes', async (req, res) => {
+  res.render("allQuotes.ejs");
+});
+
 app.post('/addAuthorQuoteByCategory', async (req, res) => {
   let authorId = req.body.authorId;
   let cat = req.body.category;

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Author</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <link href="/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <%- include("partials/header.ejs") %>
+  <h1>Updating Author</h1>
+
+  <%= authorInfo[0].dob %> <br>
+
+
+  <form action="/updateAuthor" method="POST">
+    <input type="hidden" name="authorId" value="<%= authorInfo[0].authorId %>">
+    First Name: <input type="text" name="fn" value="<%= authorInfo[0].firstName %>">
+    <br>
+    Last Name: <input type="text" name="ln" value="<%= authorInfo[0].lastName %>">
+    <br>
+    <!-- <div id="sexDiv">
+      <p>Sex: </p>
+      <label>
+        <input type="radio" name="sex" value="M">
+        Male
+      </label>
+      <label>
+        <input type="radio" name="sex" value="F">
+        Female
+      </label>
+    </div>
+    <br>
+    Date Of birth: <input type="date" name="birthday">
+    <br>
+    Date Of death: <input type="date" name="deathday">
+    <br>
+    Biography: <textarea name="bio"></textarea>
+    <br>
+    Image Url: <input type="text" name="imageUrl">
+    <br> -->
+    <button>Update Author</button>
+  </form>
+  <br>
+  <%- include("partials/footer.ejs") %>
+</body>
+
+</html>
