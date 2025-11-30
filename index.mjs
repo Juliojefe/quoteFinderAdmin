@@ -31,9 +31,47 @@ app.get('/addQuote', async (req, res) => {
   res.render("newQuote.ejs", { authorRows, categoriesRows });
 });
 
-app.get('/', async (req, res) => {
-  res.render("home.ejs");
+app.get('/', (req, res) => {
+    res.render('login.ejs');
 });
+
+app.get('/profile', isUserAuthenticated, (req, res) => {
+    res.render('profile.ejs');
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/')
+});
+
+app.post('/loginProcess', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    let hashedPassword = "";
+    let sql = `select * from users where username = ?`;
+    const [rows] = await pool.query(sql, [username]);
+    // const match = await bcrypt.compare(password, hashedPassword);
+    if (rows.length > 0) {
+        req.session.isUserAuthenticated = true;
+        req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
+        res.render('home.ejs');
+    } else {
+        res.render('login.ejs', {"loginError" : "Wrong Credentials"});
+    }
+});
+
+app.get('/newRoute', isUserAuthenticated, (req, res) => {
+    res.render('newView.ejs')
+});
+
+// middleware functions
+function isUserAuthenticated(req, res, next) {
+    if (req.session.isUserAuthenticated) {
+        next();
+    } else {
+        res.redirect('/')
+    }
+}
 
 //  displays form to update quote
 app.get('/updateQuote', async (req, res) => {
