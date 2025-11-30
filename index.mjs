@@ -135,7 +135,7 @@ app.get('/allAuthors', async (req, res) => {
 });
 
 app.get('/allQuotes', async (req, res) => {
-  let sql = `SELECT quoteId, quoteFROM quotes`;
+  let sql = `SELECT quoteId, quote FROM quotes`;
   const [quotes] = await pool.query(sql);
   res.render("allQuotes.ejs", { 
     quotes,
