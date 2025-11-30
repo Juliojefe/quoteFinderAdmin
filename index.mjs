@@ -27,7 +27,7 @@ const pool = mysql.createPool({
   waitForConnections: true
 });
 
-app.get('/addQuote', async (req, res) => {
+app.get('/addQuote', isUserAuthenticated, async (req, res) => {
   //  search by author
   let authorsSql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
   const [authorRows] = await pool.query(authorsSql);
@@ -86,7 +86,7 @@ function isUserAuthenticated(req, res, next) {
 }
 
 //  displays form to update quote
-app.get('/updateQuote', async (req, res) => {
+app.get('/updateQuote', isUserAuthenticated, async (req, res) => {
   let quoteId = req.query.quoteId;
   let sql = `SELECT * FROM quotes WHERE quoteId = ?`;
   const [quoteInfo] = await pool.query(sql, [quoteId]);
@@ -94,7 +94,7 @@ app.get('/updateQuote', async (req, res) => {
   let authorsSql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
   const [authorRows] = await pool.query(authorsSql);
   //  search by category
-  let categoriesSql = "SELECT DISTINCT category, quoteId FROM quotes;";
+  let categoriesSql = "SELECT DISTINCT category FROM quotes ORDER BY category";
   const [categoriesRows] = await pool.query(categoriesSql);
   res.render("updateQuote.ejs", { 
     quoteInfo, 
@@ -103,18 +103,31 @@ app.get('/updateQuote', async (req, res) => {
   });
 });
 
-app.post('/updateAuthor', async (req, res) => {
-  let fName = req.body.fn;
-  let lName = req.body.ln;
+app.post('/updateQuote', isUserAuthenticated, async (req, res) => {
+  let quoteId = req.body.quoteId;
   let authorId = req.body.authorId;
-  let sql = `UPDATE authors SET firstName = ?, lastName = ? WHERE authorId = ?`;
-  let sqlParams = [fName, lName, authorId];
-  const [row] = await pool.query(sql, sqlParams);
-  res.redirect("/allAuthors", { active: "allAuthors"});
+  let category = req.body.category;
+  let quote   = req.body.quote;
+  let sql = `UPDATE quotes 
+             SET authorId = ?, category = ?, quote = ? 
+             WHERE quoteId = ?`;
+  let sqlParams = [authorId, category, quote, quoteId];
+  const [result] = await pool.query(sql, sqlParams);
+  res.redirect('/home');
+});
+
+app.delete('/deleteQuote', isUserAuthenticated, async (req, res) => {
+  let quoteId = req.query.id;
+  res.redirect('/home');
+});
+
+app.delete('/deleteAuthor', isUserAuthenticated, async (req, res) => {
+  let authorId = req.query.id;
+  res.redirect('/home');
 });
 
 // display form to update author info
-app.get('/updateAuthor', async (req, res) => {
+app.get('/updateAuthor', isUserAuthenticated, async (req, res) => {
   let authorId = req.query.id;
   let sql = `SELECT *,
             DATE_FORMAT(dob, '%Y-%m-%d') ISOdob,
@@ -125,7 +138,24 @@ app.get('/updateAuthor', async (req, res) => {
   res.render("updateAuthor.ejs", { authorInfo });
 });
 
-app.get('/allAuthors', async (req, res) => {
+app.post('/updateAuthor', isUserAuthenticated, async (req, res) => {
+  let fName = req.body.fn;
+  let lName = req.body.ln;
+  let authorId = req.body.authorId;
+  let dob = req.body.birthday;
+  let dod = req.body.deathday;
+  let sex = req.body.sex;
+  let profession = req.body.profession;
+  let country = req.body.country;
+  let portrait = req.body.imageUrl;
+  let biography = req.body.bio;
+  let sql = `UPDATE authors SET firstName = ?, lastName = ?, dob = ?, dod = ?, sex = ?, profession = ?, country = ?, portrait = ?, biography = ? WHERE authorId = ?`;
+  let sqlParams = [fName, lName, dob, dod, sex, profession, country, portrait, biography, authorId];
+  const [row] = await pool.query(sql, sqlParams);
+  res.redirect('/home');
+});
+
+app.get('/allAuthors', isUserAuthenticated, async (req, res) => {
   let sql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
   const [authors] = await pool.query(sql);
   res.render("allAuthors.ejs", { 
@@ -134,7 +164,7 @@ app.get('/allAuthors', async (req, res) => {
    });
 });
 
-app.get('/allQuotes', async (req, res) => {
+app.get('/allQuotes', isUserAuthenticated, async (req, res) => {
   let sql = `SELECT quoteId, quote FROM quotes`;
   const [quotes] = await pool.query(sql);
   res.render("allQuotes.ejs", { 
@@ -143,39 +173,36 @@ app.get('/allQuotes', async (req, res) => {
   });
 });
 
-app.post('/addAuthorQuoteByCategory', async (req, res) => {
+app.post('/addAuthorQuoteByCategory', isUserAuthenticated, async (req, res) => {
   let authorId = req.body.authorId;
   let cat = req.body.category;
   let quote = req.body.quote;
   let sql = `INSERT INTO quotes (quote, authorId, category) VALUES (?, ?, ?)`;
   let sqlParams = [quote, authorId, cat];
   const [rows] = await pool.query(sql, sqlParams);
-  //  search by author
-  let authorsSql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
-  const [authorRows] = await pool.query(authorsSql);
-  //  search by category
-  let categoriesSql = "SELECT DISTINCT category FROM quotes;";
-  const [categoriesRows] = await pool.query(categoriesSql);
-  res.render("newQuote.ejs", { authorRows, categoriesRows });
+  res.render("home.ejs", {active : "home" });
 });
 
 //  Displays form to add a new author
-app.post('/addAuthor', async (req, res) => {
-  let firstName = req.body.fn;
-  let lastName = req.body.ln;
-  let sex = req.body.sex;
-  let birthday = req.body.birthday;
-  let deathday = req.body.deathday;
-  let bio = req.body.bio;
-  let imageUrl = req.body.imageUrl;
-  let sql = `INSERT INTO authors (firstName, lastName, dob, dod, sex, portrait, biography) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-  let sqlParams = [firstName, lastName, birthday, deathday, sex, imageUrl, bio];
-  const [rows] = await pool.query(sql, sqlParams);
-  res.render("home.ejs", { active : "home"});
+app.get('/addAuthor', isUserAuthenticated, async (req, res) => {
+  res.render("addAuthor.ejs", { active : "addAuthor" });
 });
 
-app.get('/addAuthor', async (req, res) => {
-  res.render("addAuthor.ejs", { active : "addAuthor" });
+app.post('/addAuthor', isUserAuthenticated, async (req, res) => {
+  let firstName = req.body.fn;
+  let lastName = req.body.ln;
+  let birthday = req.body.birthday;
+  let deathday = req.body.deathday;
+  let sex = req.body.sex;
+  let profession = req.body.profession;
+  let country = req.body.country;
+  let imageUrl = req.body.imageUrl;
+  let bio = req.body.bio;
+  let sql = `INSERT INTO authors (firstName, lastName, dob, dod, sex, profession, country, portrait, biography) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  let sqlParams = [firstName, lastName, birthday, deathday, sex, profession, country, imageUrl, bio];
+  const [rows] = await pool.query(sql, sqlParams);
+  res.render("home.ejs", { active : "home"});
 });
 
 app.get("/dbTest", async (req, res) => {

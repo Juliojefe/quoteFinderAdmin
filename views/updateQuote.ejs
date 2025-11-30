@@ -18,6 +18,7 @@
   <%- include("partials/nav.ejs") %>
     <h1>Update Quote</h1>
     <form action="/updateQuote" method="POST">
+    <input type="hidden" name="quoteId" value="<%= quoteInfo[0].quoteId %>">
       <label>Select author</label>
       <select name="authorId">
         <% for (let authorRow of authorRows) { %>
@@ -31,12 +32,11 @@
       <label>Select category</label>
       <select name="category">
         <% for (let catRow of categoriesRows) { %>
-          <option value="<%= catRow.category %>"  <% if (catRow.quoteId == quoteInfo[0].quoteId ) { %>
-            selected
-            <% } %>>
+          <option value="<%= catRow.category %>"
+            <%= (catRow.category === quoteInfo[0].category ? 'selected' : '') %>>
             <%= catRow.category %>
           </option>
-          <% } %>
+        <% } %>
       </select>
       <br>
       Quote: <textarea name="quote"><%= quoteInfo[0].quote %></textarea>

@@ -18,30 +18,19 @@
   <%- include("partials/nav.ejs") %>
   <h1>Adding New Author</h1>
   <form action="/addAuthor" method="POST">
-    First Name: <input type="text" name="fn">
-    <br>
-    Last Name: <input type="text" name="ln">
-    <br>
-    <div id="sexDiv">
-      <p>Sex: </p>
-      <label>
-        <input type="radio" name="sex" value="M">
-        Male
-      </label>
-      <label>
-        <input type="radio" name="sex" value="F">
-        Female
-      </label>
-    </div>
-    <br>
-    Date Of birth: <input type="date" name="birthday">
-    <br>
-    Date Of death: <input type="date" name="deathday">
-    <br>
-    Biography: <textarea name="bio"></textarea>
-    <br>
-    Image Url: <input type="text" name="imageUrl">
-    <br>
+    First Name: <input type="text"text" name="fn"><br>
+    Last Name: <input type="text" name="ln"><br>
+    Date Of birth: <input type="date" name="birthday"><br>
+    Date Of death: <input type="date" name="deathday"><br>
+    Sex:
+    <select name="sex">
+      <option value="M">Male</option>
+      <option value="F">Female</option>
+    </select><br>
+    Profession: <input type="text" name="profession"><br>
+    Country: <input type="text" name="country"><br>
+    Image Url: <input type="text" name="imageUrl"><br>
+    Biography: <textarea name="bio"></textarea><br>
     <button>Add Author</button>
   </form>
   <br>
