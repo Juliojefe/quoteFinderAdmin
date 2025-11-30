@@ -116,13 +116,19 @@ app.post('/updateQuote', isUserAuthenticated, async (req, res) => {
   res.redirect('/home');
 });
 
-app.delete('/deleteQuote', isUserAuthenticated, async (req, res) => {
-  let quoteId = req.query.id;
+app.get('/deleteQuote', isUserAuthenticated, async (req, res) => {
+  let quoteId = req.query.quoteId;
+  let sql = `DELETE FROM quotes WHERE quoteId = ?`;
+  let sqlParams = [quoteId];
+  const [rows] = await pool.query(sql, sqlParams);
   res.redirect('/home');
 });
 
-app.delete('/deleteAuthor', isUserAuthenticated, async (req, res) => {
+app.get('/deleteAuthor', isUserAuthenticated, async (req, res) => {
   let authorId = req.query.id;
+  let sql = `DELETE FROM authors WHERE authorId = ?`;
+  let sqlParams = [authorId];
+  const [rows] = await pool.query(sql, sqlParams);
   res.redirect('/home');
 });
 
