@@ -34,7 +34,11 @@ app.get('/addQuote', async (req, res) => {
   //  search by category
   let categoriesSql = "SELECT DISTINCT category FROM quotes;";
   const [categoriesRows] = await pool.query(categoriesSql);
-  res.render("newQuote.ejs", { authorRows, categoriesRows });
+  res.render("newQuote.ejs", { 
+    authorRows, 
+    active: "addQuote",
+    categoriesRows 
+  });
 });
 
 app.get('/', (req, res) => {
@@ -42,7 +46,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/home', isUserAuthenticated, (req, res) => {
-  res.render('home.ejs');
+  res.render('home.ejs', { active: "home" });
 });
 
 app.get('/logout', (req, res) => {
@@ -62,9 +66,9 @@ app.post('/loginProcess', async (req, res) => {
   if (match) {
     req.session.isUserAuthenticated = true;
     req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
-    res.render('home.ejs');
+    res.render('home.ejs', { active: "home" });
   } else {
-    res.render('login.ejs', { "loginError": "Wrong Credentials" });
+    res.render('login.ejs', { loginError: "Wrong Credentials" });
   }
 });
 
@@ -92,7 +96,11 @@ app.get('/updateQuote', async (req, res) => {
   //  search by category
   let categoriesSql = "SELECT DISTINCT category, quoteId FROM quotes;";
   const [categoriesRows] = await pool.query(categoriesSql);
-  res.render("updateQuote.ejs", { quoteInfo, authorRows, categoriesRows });
+  res.render("updateQuote.ejs", { 
+    quoteInfo, 
+    authorRows,
+    categoriesRows 
+  });
 });
 
 app.post('/updateAuthor', async (req, res) => {
@@ -102,7 +110,7 @@ app.post('/updateAuthor', async (req, res) => {
   let sql = `UPDATE authors SET firstName = ?, lastName = ? WHERE authorId = ?`;
   let sqlParams = [fName, lName, authorId];
   const [row] = await pool.query(sql, sqlParams);
-  res.redirect("/allAuthors");
+  res.redirect("/allAuthors", { active: "allAuthors"});
 });
 
 // display form to update author info
@@ -120,14 +128,19 @@ app.get('/updateAuthor', async (req, res) => {
 app.get('/allAuthors', async (req, res) => {
   let sql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
   const [authors] = await pool.query(sql);
-  res.render("allAuthors.ejs", { authors });
+  res.render("allAuthors.ejs", { 
+    authors,
+    active: "allAuthors"
+   });
 });
 
 app.get('/allQuotes', async (req, res) => {
-  let sql = `SELECT quoteId, quote
-              FROM quotes`;
+  let sql = `SELECT quoteId, quoteFROM quotes`;
   const [quotes] = await pool.query(sql);
-  res.render("allQuotes.ejs", { quotes });
+  res.render("allQuotes.ejs", { 
+    quotes,
+    active: "allQuotes"
+  });
 });
 
 app.post('/addAuthorQuoteByCategory', async (req, res) => {
@@ -158,11 +171,11 @@ app.post('/addAuthor', async (req, res) => {
   let sql = `INSERT INTO authors (firstName, lastName, dob, dod, sex, portrait, biography) VALUES (?, ?, ?, ?, ?, ?, ?)`;
   let sqlParams = [firstName, lastName, birthday, deathday, sex, imageUrl, bio];
   const [rows] = await pool.query(sql, sqlParams);
-  res.render("addAuthor.ejs");
+  res.render("home.ejs", { active : "home"});
 });
 
 app.get('/addAuthor', async (req, res) => {
-  res.render("addAuthor.ejs");
+  res.render("addAuthor.ejs", { active : "addAuthor" });
 });
 
 app.get("/dbTest", async (req, res) => {

@@ -13,3 +13,33 @@
   padding: 20px;
   font-size: x-large;
 }
+
+#navDiv {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  background-color: gray;
+  padding: 5px;
+  border: 1px solid black;
+}
+
+#navDiv a {
+  display: inline-block;
+  border: 1px solid black;
+  color: black;
+  background-color: white;
+  font-size: larger;
+  font-weight: bold;
+  padding: 5px 10px;
+  text-decoration: none;
+  margin: 0;
+}
+
+#navDiv a:hover {
+  background-color: lightblue;
+}
+
+#navDiv a.active {
+  background-color: rgb(0, 191, 255);
+}

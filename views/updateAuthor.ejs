@@ -15,9 +15,8 @@
 
 <body>
   <%- include("partials/header.ejs") %>
+  <%- include("partials/nav.ejs") %>
     <h1>Updating Author</h1>
-
-
     <form action="/updateAuthor" method="POST">
       <input type="hidden" name="authorId" value="<%= authorInfo[0].authorId %>">
       First Name: <input type="text" name="fn" value="<%= authorInfo[0].firstName %>">
