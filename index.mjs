@@ -4,7 +4,13 @@ import bcrypt from 'bcrypt';
 import session from 'express-session';
 
 const app = express();
-
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: 'cst336 csumb',
+  resave: false,
+  saveUninitialized: true,
+//   cookie: { secure: true }   //  only works in production
+}))
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
@@ -32,45 +38,47 @@ app.get('/addQuote', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.render('login.ejs');
+  res.render('login.ejs');
 });
 
-app.get('/profile', isUserAuthenticated, (req, res) => {
-    res.render('profile.ejs');
+app.get('/home', isUserAuthenticated, (req, res) => {
+  res.render('home.ejs');
 });
 
 app.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/')
+  req.session.destroy();
+  res.redirect('/')
 });
 
 app.post('/loginProcess', async (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-    let hashedPassword = "";
-    let sql = `select * from users where username = ?`;
-    const [rows] = await pool.query(sql, [username]);
-    // const match = await bcrypt.compare(password, hashedPassword);
-    if (rows.length > 0) {
-        req.session.isUserAuthenticated = true;
-        req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
-        res.render('home.ejs');
-    } else {
-        res.render('login.ejs', {"loginError" : "Wrong Credentials"});
-    }
+  let username = req.body.username;
+  let password = req.body.password;
+  let sql = `select * from users where username = ?`;
+  const [rows] = await pool.query(sql, [username]);
+  if (rows.length === 0) {
+    return res.render('login.ejs', { loginError: "Wrong credentials" });
+  }
+  const match = await bcrypt.compare(password, rows[0].password);
+  if (match) {
+    req.session.isUserAuthenticated = true;
+    req.session.fullName = rows[0].firstName + " " + rows[0].lastName;
+    res.render('home.ejs');
+  } else {
+    res.render('login.ejs', { "loginError": "Wrong Credentials" });
+  }
 });
 
 app.get('/newRoute', isUserAuthenticated, (req, res) => {
-    res.render('newView.ejs')
+  res.render('newView.ejs')
 });
 
 // middleware functions
 function isUserAuthenticated(req, res, next) {
-    if (req.session.isUserAuthenticated) {
-        next();
-    } else {
-        res.redirect('/')
-    }
+  if (req.session.isUserAuthenticated) {
+    next();
+  } else {
+    res.redirect('/')
+  }
 }
 
 //  displays form to update quote
@@ -84,7 +92,7 @@ app.get('/updateQuote', async (req, res) => {
   //  search by category
   let categoriesSql = "SELECT DISTINCT category, quoteId FROM quotes;";
   const [categoriesRows] = await pool.query(categoriesSql);
-  res.render("updateQuote.ejs", {quoteInfo, authorRows, categoriesRows});
+  res.render("updateQuote.ejs", { quoteInfo, authorRows, categoriesRows });
 });
 
 app.post('/updateAuthor', async (req, res) => {
@@ -106,20 +114,20 @@ app.get('/updateAuthor', async (req, res) => {
             FROM authors 
             WHERE authorId = ?`;
   const [authorInfo] = await pool.query(sql, [authorId]);
-  res.render("updateAuthor.ejs", {authorInfo});
+  res.render("updateAuthor.ejs", { authorInfo });
 });
 
 app.get('/allAuthors', async (req, res) => {
   let sql = "SELECT authorId, firstName, lastName FROM authors ORDER BY lastName";
   const [authors] = await pool.query(sql);
-  res.render("allAuthors.ejs", {authors});
+  res.render("allAuthors.ejs", { authors });
 });
 
 app.get('/allQuotes', async (req, res) => {
   let sql = `SELECT quoteId, quote
               FROM quotes`;
   const [quotes] = await pool.query(sql);
-  res.render("allQuotes.ejs", {quotes});
+  res.render("allQuotes.ejs", { quotes });
 });
 
 app.post('/addAuthorQuoteByCategory', async (req, res) => {
